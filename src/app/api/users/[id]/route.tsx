@@ -1,22 +1,21 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/user";
+import { hashPassword } from "@/lib/auth";
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await connectDB();
-    const deleted = await User.findByIdAndDelete(params.id);
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+  await connectDB();
+  const { username, password, role } = await req.json();
 
-    if (!deleted) {
-      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
-    }
+  const updateData: any = { username, role };
+  if (password) updateData.password = await hashPassword(password);
 
-    return NextResponse.json({ message: "Usuario eliminado" });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Error al eliminar" }, { status: 500 });
-  }
+  const updatedUser = await User.findByIdAndUpdate(params.id, updateData, { new: true });
+  return NextResponse.json(updatedUser);
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  await connectDB();
+  await User.findByIdAndDelete(params.id);
+  return NextResponse.json({ success: true });
 }

@@ -1,77 +1,88 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function UserForm() {
-  const [form, setForm] = useState({ username: "", password: "", role: "ventas" });
-  const [message, setMessage] = useState("");
+interface UserFormProps {
+  user: any | null;
+  onClose: () => void;
+  onSaved: () => void;
+}
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+export default function UserForm({ user, onClose, onSaved }: UserFormProps) {
+  const [username, setUsername] = useState(user?.username || "");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState(user?.role || "sales");
+  const isEditing = Boolean(user);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage("");
 
-    const res = await fetch("/api/users", {
-      method: "POST",
+    const method = isEditing ? "PUT" : "POST";
+    const url = isEditing ? `/api/users/${user._id}` : "/api/users";
+
+    const body = JSON.stringify({ username, password: password || undefined, role });
+
+    await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body,
     });
 
-    const data = await res.json();
-    if (res.ok) {
-      setMessage("✅ Usuario creado correctamente");
-      setForm({ username: "", password: "", role: "ventas" });
-    } else {
-      setMessage(`❌ Error: ${data.message}`);
-    }
-  };
+    onSaved();
+    onClose();
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow w-full max-w-md">
-      <h2 className="text-xl font-semibold text-gray-700">Registrar nuevo usuario</h2>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40">
+      <Card className="w-[400px]">
+        <CardContent>
+          <h2 className="text-lg font-bold mt-2 mb-4">{isEditing ? "Editar Usuario" : "Nuevo Usuario"}</h2>
 
-      <input
-        name="username"
-        value={form.username}
-        onChange={handleChange}
-        placeholder="Nombre de usuario"
-        className="border p-2 rounded"
-        required
-      />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm">Usuario</label>
+              <input
+                type="text"
+                className="border rounded w-full p-2"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-      <input
-        type="password"
-        name="password"
-        value={form.password}
-        onChange={handleChange}
-        placeholder="Contraseña"
-        className="border p-2 rounded"
-        required
-      />
+            <div>
+              <label className="block text-sm">Contraseña {isEditing && "(dejar vacío para no cambiar)"}</label>
+              <input
+                type="password"
+                className="border rounded w-full p-2"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-      <select
-        name="role"
-        value={form.role}
-        onChange={handleChange}
-        className="border p-2 rounded"
-      >
-        <option value="ventas">Ventas</option>
-        <option value="inventario">Inventario</option>
-        <option value="compras">Compras</option>
-        <option value="admin">Administrador</option>
-      </select>
+            <div>
+              <label className="block text-sm">Rol</label>
+              <select
+                className="border rounded w-full p-2"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="admin">Administrador</option>
+                <option value="sales">Ventas</option>
+                <option value="inventory">Inventario</option>
+                <option value="finance">Gastos/Compras</option>
+              </select>
+            </div>
 
-      <button
-        type="submit"
-        className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-      >
-        Crear usuario
-      </button>
-
-      {message && <p className="text-sm text-gray-600">{message}</p>}
-    </form>
+            <div className="flex justify-end space-x-2">
+              <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+              <Button type="submit">{isEditing ? "Guardar cambios" : "Crear"}</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
