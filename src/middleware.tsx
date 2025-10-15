@@ -1,4 +1,4 @@
-export const runtime = "nodejs"; // ✅ fuerza el uso del runtime Node.js
+export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

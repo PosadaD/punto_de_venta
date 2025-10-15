@@ -2,8 +2,7 @@
 'use client'; // Esto es necesario para usar hooks como useRouter
 
 import { useRouter } from 'next/navigation';
-import LogoutButton from "./components/logoutButton";
-import Link from 'next/link';
+import Image from 'next/image';
   
 export default function Dashboard() {
   const router = useRouter();
@@ -14,12 +13,8 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-green-100 gap-6">
-      <h1 className="text-3xl font-bold text-green-700">
-        Bienvenido al Punto de Venta
-      </h1>
-      <button className='bg-black' onClick={handleRedirect}>Ir a Usuarios</button>
-      <LogoutButton />
+    <main className="flex flex-col items-center box-border justify-center h-full">
+      <Image src="/logo.png" width={500} height={500} alt='logo Fenix'/>
     </main>
   );
 }
