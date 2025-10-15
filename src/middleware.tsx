@@ -1,3 +1,5 @@
+export const runtime = "nodejs"; // ✅ fuerza el uso del runtime Node.js
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
