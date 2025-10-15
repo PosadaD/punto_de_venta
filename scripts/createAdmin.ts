@@ -10,7 +10,7 @@ async function main() {
   const user = await User.create({
     username: "admin",
     password,
-    role: "admin",
+    role: ["admin"],
   });
 
   console.log("Usuario administrador creado:", user);

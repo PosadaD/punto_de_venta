@@ -55,7 +55,7 @@ export default function UsersPage() {
               {users.map((user) => (
                 <tr key={user._id} className="border-b">
                   <td className="p-2">{user.username}</td>
-                  <td className="p-2">{user.role}</td>
+                  <td className="p-2">{Array.isArray(user.roles) ? user.roles.join(", ") : user.role}</td>
                   <td className="p-2 text-right space-x-2">
                     <Button variant="outline" onClick={() => handleEdit(user)}>Editar</Button>
                     <Button variant="destructive" onClick={() => handleDelete(user._id)}>Eliminar</Button>
