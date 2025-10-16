@@ -16,7 +16,7 @@ const RepairSchema = new Schema(
     description: String,
     status: {
       type: String,
-      enum: ["received", "started", "finished", "delivered"],
+      enum: ["received", "in_progress", "completed", "delivered"],
       default: "received",
     },
   },

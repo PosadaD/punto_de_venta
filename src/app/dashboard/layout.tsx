@@ -11,7 +11,7 @@ const links = [
   { name: "Ventas", href: "/dashboard/sales" },
   { name: "Inventario", href: "/dashboard/inventory" },
   { name: "Gastos/Compras", href: "/dashboard/expenses" },
-  { name: "Reparaciones", href: "/dashboard/reparaciones" },
+  { name: "Reparaciones", href: "/dashboard/repairs" },
   { name: "Reportes", href: "/dashboard/reports" },
 ];
 
