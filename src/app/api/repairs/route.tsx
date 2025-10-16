@@ -7,7 +7,7 @@ import Sale from "@/models/sale";
 export async function GET() {
   try {
     await connectDB();
-    const repairs = await Repair.find({ status: { $ne: "delivered" } })
+    const repairs = await Repair.find({ status: { $nin: ["delivered", "completed"] } })
       .sort({ createdAt: -1 });
     return NextResponse.json(repairs);
   } catch (err: any) {

@@ -102,7 +102,6 @@ export default function RepairsPage() {
                         <SelectItem value="received">Recibido</SelectItem>
                         <SelectItem value="in_progress">En reparación</SelectItem>
                         <SelectItem value="completed">Completado</SelectItem>
-                        <SelectItem value="delivered">Entregado</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>

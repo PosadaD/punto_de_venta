@@ -14,6 +14,7 @@ const links = [
   { name: "Reparaciones", href: "/dashboard/repairs" },
   { name: "Reportes", href: "/dashboard/reports" },
   { name: "Historial de ventas", href: "/dashboard/salesHistory" },
+  { name: "Entregas", href: "/dashboard/delivery" },
 ];
 
 export default function DashboardLayout({

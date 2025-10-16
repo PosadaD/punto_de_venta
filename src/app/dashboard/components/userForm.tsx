@@ -29,7 +29,7 @@ export default function UserForm({ user, onClose, onSaved }: UserFormProps) {
     }
   }, [user]);
 
-  const rolesList = ["admin", "sales", "inventory", "finance", "technician"];
+  const rolesList = ["admin", "sales", "inventory", "finance", "technician", "delivery"];
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
