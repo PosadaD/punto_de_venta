@@ -77,7 +77,7 @@ export function middleware(req: NextRequest) {
       users: ["admin"],
       sales: ["admin", "sales"],
       inventory: ["admin", "inventory"],
-      finance: ["admin", "finance"],
+      expenses: ["admin", "finance"],
       repairs: ["admin", "technician"],
       reports: ["admin"],
     };
