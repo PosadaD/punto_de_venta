@@ -392,7 +392,7 @@ export default function SalesPage() {
         <CardContent>
           {/* Search */}
           <div className="mb-3">
-            <Label>Buscar por título o código (tiempo real)</Label>
+            <Label>Buscar</Label>
             <div className="relative">
               <Input placeholder="Escribe título o código..." value={query} onChange={(e) => setQuery(e.target.value)} />
               {suggestions.length > 0 && (
