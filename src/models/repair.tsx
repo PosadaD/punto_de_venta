@@ -6,7 +6,7 @@ const RepairSchema = new Schema(
     saleCode: { type: String, required: true },
     productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     title: { type: String, required: true },
-    code: { type: String, required: true },
+    code: { type: String, required: false },
     customer: {
       name: { type: String, required: true },
       phone: { type: String, required: true },

@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const SaleItemSchema = new Schema({
   productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
   title: { type: String, required: true },
-  code: { type: String, required: true },
+  code: { type: String, required: false },
   type: { type: String, enum: ["product", "service"], default: "product" },
   qty: { type: Number, required: true },
   unitPrice: { type: Number, required: true },

@@ -17,21 +17,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No hay items" }, { status: 400 });
     }
 
-    if (!saleCode) {
-      return NextResponse.json({ error: "saleCode es requerido" }, { status: 400 });
-    }
-
     if (!user) {
       return NextResponse.json({ error: "Usuario que realiza la venta requerido" }, { status: 400 });
     }
 
-    // Obtener productos/servicios de DB
+    // ✅ Generar saleCode si no se envía desde el frontend
+    const generatedSaleCode = saleCode || `S-${Date.now()}`;
+
+    // Obtener productos/servicios
     const ids = items.map((i: any) => i.productId);
     const products = await Product.find({ _id: { $in: ids } });
     const map = new Map();
     products.forEach((p) => map.set(String(p._id), p));
 
-    // Validaciones y cálculo de totales
+    // Cálculo de totales
     let total = 0;
     let totalNet = 0;
     let totalTax = 0;
@@ -47,7 +46,7 @@ export async function POST(req: Request) {
       if (isNaN(qty) || qty <= 0)
         return NextResponse.json({ error: `Cantidad inválida para ${prod.title}` }, { status: 400 });
 
-      const unitPrice = Number(it.unitPrice); // precio incluido IVA
+      const unitPrice = Number(it.unitPrice);
       const lineTotal = unitPrice * qty;
       const netUnit = unitPrice / (1 + TAX_RATE);
       const taxUnit = unitPrice - netUnit;
@@ -100,21 +99,22 @@ export async function POST(req: Request) {
     }
     if (ops.length) await Product.bulkWrite(ops);
 
-    // Crear venta
+    // ✅ Crear venta
     const sale = await Sale.create({
       items: saleItems,
       total,
       totalNet,
       totalTax,
-      saleCode,
+      saleCode: generatedSaleCode,
       user, // { userId, username }
       status: servicesForRepair.length ? "pending" : "completed",
     });
 
-    // Crear reparaciones para servicios
+    // ✅ Crear reparaciones asociadas a la venta
     for (const s of servicesForRepair) {
       await Repair.create({
         saleId: sale._id,
+        saleCode: generatedSaleCode, // ⚡️ Importante: ahora se incluye
         productId: s.prod._id,
         title: s.prod.title,
         code: s.prod.code,
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ message: "Venta creada", sale });
+    return NextResponse.json({ message: "✅ Venta creada correctamente", sale });
   } catch (err: any) {
     console.error("Error creando venta", err);
     return NextResponse.json({ error: err.message || "Error servidor" }, { status: 500 });
