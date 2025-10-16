@@ -22,7 +22,7 @@ export default function Dashboard() {
       <div className='w-full h-16 flex justify-center'>
         {<h2 className="text-4xl font-bold text-center">Bienvenido, {username}</h2>}
       </div>
-      <Image src="/logo.png" width={500} height={500} alt='logo Fenix'/>
+      {/* <Image src="/logo.png" width={500} height={500} alt='logo Fenix'/> */}
     </main>
   );
 }

@@ -10,11 +10,13 @@ export default function ProductForm({ product, onClose, onSaved }: any) {
   const [form, setForm] = useState({
     title: product?.title || "",
     code: product?.code || "",
+    type: product?.type || "product", // 🔹 Nuevo campo
     purchaseDate: product?.purchaseDate?.slice(0, 10) || "",
     purchasePrice: product?.purchasePrice || 0,
     salePrice: product?.salePrice || 0,
     stock: product?.stock || 0,
   });
+
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -60,10 +62,33 @@ export default function ProductForm({ product, onClose, onSaved }: any) {
               <input type="text" name="code" value={form.code} onChange={handleChange} required className="border rounded w-full p-2" />
             </div>
 
-            <div>
-              <label className="block text-sm">Fecha de compra</label>
-              <input type="date" name="purchaseDate" value={form.purchaseDate} onChange={handleChange} required className="border rounded w-full p-2" />
-            </div>
+            {form.type === "product" &&(
+              <>
+                <div>
+                  <label className="block text-sm">Fecha de compra</label>
+                  <input type="date" name="purchaseDate" value={form.purchaseDate} onChange={handleChange} required className="border rounded w-full p-2" />
+                </div>
+
+                <div>
+                  <label className="block text-sm">Tipo</label>
+                  <select
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                    required
+                    className="border rounded w-full p-2"
+                  >
+                    <option value="product">Producto</option>
+                    <option value="service">Servicio</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm">Stock disponible</label>
+                  <input type="number" name="stock" value={form.stock} onChange={handleChange} required className="border rounded w-full p-2" />
+                </div>
+              </>
+            )}
 
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -75,11 +100,6 @@ export default function ProductForm({ product, onClose, onSaved }: any) {
                 <label className="block text-sm">Precio venta</label>
                 <input type="number" name="salePrice" value={form.salePrice} onChange={handleChange} required className="border rounded w-full p-2" />
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm">Stock disponible</label>
-              <input type="number" name="stock" value={form.stock} onChange={handleChange} required className="border rounded w-full p-2" />
             </div>
 
             <div className="flex justify-end space-x-2">
