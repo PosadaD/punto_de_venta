@@ -85,10 +85,10 @@ export default function RepairsPage() {
                     </span>
                   </TableCell>
                   <TableCell>{r.title}</TableCell>
-                  <TableCell>{r.customer?.brand || "-"}</TableCell>
-                  <TableCell>{r.customer?.model || "-"}</TableCell>
+                  <TableCell>{r.brand || "-"}</TableCell>
+                  <TableCell>{r.model || "-"}</TableCell>
                   <TableCell className="max-w-[200px] truncate">
-                    {r.customer?.description || "-"}
+                    {r.description || "-"}
                   </TableCell>
                   <TableCell>
                     <Select
