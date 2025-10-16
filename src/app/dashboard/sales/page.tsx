@@ -180,6 +180,12 @@ export default function SalesPage() {
       const copy = [...prev];
       // @ts-ignore
       copy[index][field] = value;
+
+       // si se modifica el precio o la cantidad, recalcular lineTotal
+      if (field === "unitPrice" || field === "qty") {
+        copy[index].lineTotal = Number((copy[index].unitPrice * copy[index].qty).toFixed(2));
+      }
+
       return copy;
     });
   };
@@ -455,7 +461,19 @@ export default function SalesPage() {
                       <div>
                         <Input type="number" min={1} value={c.qty} onChange={(e) => updateQty(i, Number(e.target.value))} className="w-20" />
                       </div>
-                      <div className="w-24 text-right">${formatMoney(c.lineTotal)}</div>
+                      {c.type === "service" ? (
+                        <div className="mt-2 flex flex-col gap-2 items-center">
+                          <span className="text-sm text-muted-foreground">Precio</span>
+                          <Input
+                            type="number"
+                            required
+                            value={c.unitPrice}
+                            onChange={(e) => updateServiceField(i, "unitPrice", Number(e.target.value))}
+                            placeholder="Precio del servicio"
+                            className="w-32"
+                          />
+                        </div>
+                      ): <div className="w-24 text-right">${formatMoney(c.lineTotal)}</div>}
                       <div className="flex gap-1">
                         <Button variant="ghost" onClick={() => removeItem(i)}><Trash /></Button>
                       </div>

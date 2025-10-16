@@ -13,6 +13,7 @@ const links = [
   { name: "Gastos/Compras", href: "/dashboard/expenses" },
   { name: "Reparaciones", href: "/dashboard/repairs" },
   { name: "Reportes", href: "/dashboard/reports" },
+  { name: "Historial de ventas", href: "/dashboard/salesHistory" },
 ];
 
 export default function DashboardLayout({

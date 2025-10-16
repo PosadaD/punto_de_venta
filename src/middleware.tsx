@@ -80,6 +80,7 @@ export function middleware(req: NextRequest) {
       expenses: ["admin", "finance"],
       repairs: ["admin", "technician"],
       reports: ["admin"],
+      SalesHistory: ["admin"]
     };
 
     const allowed = roleAccess[segment];
