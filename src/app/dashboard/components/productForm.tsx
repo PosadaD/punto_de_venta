@@ -59,7 +59,21 @@ export default function ProductForm({ product, onClose, onSaved }: any) {
 
             <div>
               <label className="block text-sm">Código</label>
-              <input type="text" name="code" value={form.code} onChange={handleChange} required className="border rounded w-full p-2" />
+              <input type="text" name="code" value={form.code} onChange={handleChange} className="border rounded w-full p-2" />
+            </div>
+
+            <div>
+              <label className="block text-sm">Tipo</label>
+              <select
+                name="type"
+                value={form.type}
+                onChange={handleChange}
+                required
+                className="border rounded w-full p-2"
+              >
+                <option value="product">Producto</option>
+                <option value="service">Servicio</option>
+              </select>
             </div>
 
             {form.type === "product" &&(
@@ -70,38 +84,25 @@ export default function ProductForm({ product, onClose, onSaved }: any) {
                 </div>
 
                 <div>
-                  <label className="block text-sm">Tipo</label>
-                  <select
-                    name="type"
-                    value={form.type}
-                    onChange={handleChange}
-                    required
-                    className="border rounded w-full p-2"
-                  >
-                    <option value="product">Producto</option>
-                    <option value="service">Servicio</option>
-                  </select>
-                </div>
-
-                <div>
                   <label className="block text-sm">Stock disponible</label>
                   <input type="number" name="stock" value={form.stock} onChange={handleChange} required className="border rounded w-full p-2" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-sm">Precio compra</label>
+                    <input type="number" name="purchasePrice" value={form.purchasePrice} onChange={handleChange} required className="border rounded w-full p-2" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm">Precio venta</label>
+                    <input type="number" name="salePrice" value={form.salePrice} onChange={handleChange} required className="border rounded w-full p-2" />
+                  </div>
                 </div>
               </>
             )}
 
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-sm">Precio compra</label>
-                <input type="number" name="purchasePrice" value={form.purchasePrice} onChange={handleChange} required className="border rounded w-full p-2" />
-              </div>
-
-              <div>
-                <label className="block text-sm">Precio venta</label>
-                <input type="number" name="salePrice" value={form.salePrice} onChange={handleChange} required className="border rounded w-full p-2" />
-              </div>
-            </div>
-
+            
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
               <Button type="submit">{isEditing ? "Guardar" : "Crear"}</Button>

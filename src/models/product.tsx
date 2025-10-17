@@ -13,8 +13,8 @@ export interface IProduct extends Document {
 const ProductSchema = new Schema<IProduct>(
   {
     title: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
-    purchaseDate: { type: Date, required: true },
+    code: { type: String, required: false, unique: false },
+    purchaseDate: { type: Date, required: false },
     purchasePrice: { type: Number, required: true },
     salePrice: { type: Number, required: true },
     stock: { type: Number, default: 0 },
