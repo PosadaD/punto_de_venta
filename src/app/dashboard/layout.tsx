@@ -8,13 +8,14 @@ import LogoutButton from "./components/logoutButton";
 const links = [
   { name: "Inicio", href: "/dashboard" },
   { name: "Usuarios", href: "/dashboard/users" },
-  { name: "Ventas", href: "/dashboard/sales" },
   { name: "Inventario", href: "/dashboard/inventory" },
-  { name: "Gastos/Compras", href: "/dashboard/expenses" },
-  { name: "Reparaciones", href: "/dashboard/repairs" },
-  { name: "Reportes", href: "/dashboard/reports" },
+  { name: "Ventas", href: "/dashboard/sales" },
   { name: "Historial de ventas", href: "/dashboard/salesHistory" },
+  { name: "Reparaciones", href: "/dashboard/repairs" },
+  { name: "Historial reparaciones", href: "/dashboard/repairHistory" },
   { name: "Entregas", href: "/dashboard/delivery" },
+  { name: "Gastos/Compras", href: "/dashboard/expenses" },
+  { name: "Reportes", href: "/dashboard/reports" },
 ];
 
 export default function DashboardLayout({
