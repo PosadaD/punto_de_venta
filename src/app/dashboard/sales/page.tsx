@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { printTicket } from "../components/printTicket";
 
 const IVA = Number(process.env.IVA_RATE ?? 0.16);
 const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "";
@@ -292,90 +293,6 @@ export default function SalesPage() {
       alert("Error de red al crear la venta");
       console.error(err);
     }
-  };
-
-  // print ticket window (optimized for roll 58/80mm)
-  const printTicket = (opts: {
-    sale: any;
-    cart: CartItem[];
-    total: number;
-    totalNet: number;
-    totalTax: number;
-    saleCode: string;
-    user: any;
-  }) => {
-    const { cart: c, total, totalNet, totalTax, saleCode, user } = opts;
-    const widthPx = 320;
-    const w = window.open("", "_blank", `width=400,height=600`);
-    if (!w) return;
-    const itemsHtml = c
-      .map(
-        (it) =>
-          `<div style="display:flex;justify-content:space-between;margin-bottom:4px">
-             <div style="width:60%;">${escapeHtml(it.title)}</div>
-             <div style="width:10%;text-align:right">${it.qty}</div>
-             <div style="width:30%;text-align:right">${formatMoney(it.lineTotal)}</div>
-           </div>`
-      )
-      .join("");
-
-    // include services details
-    const servicesHtml = c
-      .filter((it) => it.type === "service")
-      .map(
-        (s) => `<div style="margin-top:6px;font-size:12px">
-          <strong>Servicio:</strong> ${escapeHtml(s.title)}<br/>
-          Cliente: ${escapeHtml(s.customerName ?? "")} • ${escapeHtml(s.customerPhone ?? "")}<br/>
-          Marca: ${escapeHtml(s.brand ?? "")} • Modelo: ${escapeHtml(s.model ?? "")}<br/>
-          Nota: ${escapeHtml(s.description ?? "")}
-        </div>`
-      )
-      .join("");
-
-    const businessHtml = `<div style="text-align:center">
-      <div style="font-weight:bold">${escapeHtml(BUSINESS_NAME)}</div>
-      <div style="font-size:12px">${escapeHtml(BUSINESS_ADDRESS)}</div>
-      <div style="font-size:12px">Tel: ${escapeHtml(BUSINESS_PHONE)}</div>
-      <div style="margin:8px 0">-----------------------------</div>
-    </div>`;
-
-    const userHtml = user ? `<div>Vendedor: ${escapeHtml(user.username)}</div>` : "";
-
-    const html = `
-      <html>
-        <head>
-          <title>Ticket ${saleCode}</title>
-          <style>
-            body { font-family: monospace; font-size:12px; width:${widthPx}px; margin:0; padding:8px; }
-            .right { text-align:right; }
-            .line { border-top:1px dashed #000; margin:8px 0; }
-          </style>
-        </head>
-        <body>
-          ${businessHtml}
-          <div>Folio: ${escapeHtml(saleCode)}</div>
-          <div>${new Date().toLocaleString()}</div>
-          <div class="line"></div>
-          ${itemsHtml}
-          <div class="line"></div>
-          <div style="display:flex;justify-content:space-between"><div>Subtotal</div><div class="right">${formatMoney(totalNet)}</div></div>
-          <div style="display:flex;justify-content:space-between"><div>IVA (${(IVA * 100).toFixed(0)}%)</div><div class="right">${formatMoney(totalTax)}</div></div>
-          <div style="display:flex;justify-content:space-between;font-weight:bold"><div>Total</div><div class="right">${formatMoney(total)}</div></div>
-          <div class="line"></div>
-          ${servicesHtml}
-          ${userHtml}
-          <div style="text-align:center;margin-top:10px">¡Gracias por su compra!</div>
-        </body>
-      </html>
-    `;
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-    w.focus();
-    setTimeout(() => {
-      w.print();
-      w.close();
-    }, 600);
   };
 
   // helpers

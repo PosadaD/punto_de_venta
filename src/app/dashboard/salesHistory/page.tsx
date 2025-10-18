@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trash, Edit, Save, X } from "lucide-react";
+import { Trash, Edit, Printer, Save, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { printTicket } from "../components/printTicket";
 
 type SaleItem = {
   _id?: string;
@@ -147,6 +148,23 @@ export default function SalesHistoryPage() {
         const isEditing = editingId === sale._id;
         const items = isEditing ? editedItems : sale.items;
 
+        const handlePrint = (sale: Sale) => {
+        const cart = sale.items || [];
+        const total = sale.total;
+        const totalNet = sale.totalNet;
+        const totalTax = sale.totalTax;
+
+        printTicket({
+          sale,
+          cart,
+          total,
+          totalNet,
+          totalTax,
+          saleCode: sale.saleCode,
+          user: sale.user,
+        });
+      };
+
         return (
           <Card key={sale._id} className="mb-4">
             <CardContent>
@@ -164,6 +182,7 @@ export default function SalesHistoryPage() {
                     </>
                   ) : (
                     <>
+                      <Button size="sm" onClick={() => handlePrint(sale)}><Printer size={16} /></Button>
                       <Button size="sm" onClick={() => startEditing(sale)}><Edit size={16} /></Button>
                       <Button size="sm" variant="destructive" onClick={() => deleteSale(sale._id)}><Trash size={16} /></Button>
                     </>
