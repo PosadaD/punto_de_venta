@@ -81,10 +81,8 @@ export const printTicket = ({
   const businessHtml = `
     <div style="text-align:center;margin-bottom:6px;">
       <img src="${BUSINESS_LOGO}" alt="Logo" style="max-width:150px;margin-bottom:10px;" /><br/>
-      <div style="font-weight:bold;font-size:17px;">${escapeHtml(BUSINESS_NAME)}</div>
       <div style="font-size:14px;">${escapeHtml(BUSINESS_ADDRESS)}</div>
       <div style="font-size:14px;">Tel: ${escapeHtml(BUSINESS_PHONE)}</div>
-      <div style="font-size:14px;">RFC: ${escapeHtml(BUSINESS_RFC)}</div>
       <div style="margin:6px 0;border-top:1px dashed #000;"></div>
     </div>`;
 
@@ -94,10 +92,52 @@ export const printTicket = ({
     <html>
       <head>
         <title>Ticket ${saleCode}</title>
-        <style>
-          body { font-family: monospace; font-size:14px; width:${widthPx}px; margin:0; padding:8px; }
-          .right { text-align:right; }
-          .line { border-top:1px dashed #000; margin:8px 0; }
+         <style>
+          @page {
+            size: auto;
+            margin: 5mm;
+          }
+
+          body {
+            font-family: monospace;
+            font-size: 12px;
+            width: 100%;
+            max-width: 58mm;
+            margin: 0 auto;
+            padding: 0;
+            text-align: center;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+          }
+
+          td {
+            padding: 2px 0;
+            font-size: 12px;
+          }
+
+          .totals td {
+            font-weight: bold;
+            border-top: 1px dashed #000;
+            padding-top: 6px;
+          }
+
+          .line {
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+          }
+
+          @media print {
+            body {
+              width: 100%;
+              max-width: 58mm;
+              margin: 0 auto;
+              text-align: center;
+            }
+          }
         </style>
       </head>
       <body>

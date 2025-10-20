@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import Repair from "@/models/repair";
 import Sale from "@/models/sale";
 
-// ✅ GET → Listar todas las reparaciones activas
+//GET → Listar todas las reparaciones activas
 export async function GET() {
   try {
     await connectDB();
@@ -16,7 +16,7 @@ export async function GET() {
   }
 }
 
-// ✅ PATCH → Actualizar estado de una reparación
+// PATCH → Actualizar estado de una reparación
 export async function PATCH(req: Request) {
   try {
     await connectDB();

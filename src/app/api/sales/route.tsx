@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Usuario que realiza la venta requerido" }, { status: 400 });
     }
 
-    // ✅ Generar saleCode si no se envía desde el frontend
+    // Generar saleCode si no se envía desde el frontend
     const generatedSaleCode = saleCode || `S-${Date.now()}`;
 
     // Obtener productos/servicios
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
     }
     if (ops.length) await Product.bulkWrite(ops);
 
-    // ✅ Crear venta
+    // Crear venta
     const sale = await Sale.create({
       items: saleItems,
       total,
@@ -110,11 +110,11 @@ export async function POST(req: Request) {
       status: servicesForRepair.length ? "pending" : "completed",
     });
 
-    // ✅ Crear reparaciones asociadas a la venta
+    // Crear reparaciones asociadas a la venta
     for (const s of servicesForRepair) {
       await Repair.create({
         saleId: sale._id,
-        saleCode: generatedSaleCode, // ⚡️ Importante: ahora se incluye
+        saleCode: generatedSaleCode, // Importante: ahora se incluye
         productId: s.prod._id,
         title: s.prod.title,
         code: s.prod.code,
@@ -124,6 +124,7 @@ export async function POST(req: Request) {
         },
         brand: s.serviceInfo.brand,
         model: s.serviceInfo.model,
+        password: s.serviceInfo.password,  // se icluye la contrasena
         description: s.serviceInfo.description,
         status: "received",
       });
@@ -136,14 +137,3 @@ export async function POST(req: Request) {
   }
 }
 
-// GET opcional para listar ventas
-export async function GET() {
-  try {
-    await connectDB();
-    const sales = await Sale.find({}).sort({ createdAt: -1 }).limit(200);
-    return NextResponse.json(sales);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Error obteniendo ventas" }, { status: 500 });
-  }
-}

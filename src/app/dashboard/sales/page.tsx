@@ -13,9 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { printTicket } from "../components/printTicket";
 
 const IVA = Number(process.env.IVA_RATE ?? 0.16);
-const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "";
-const BUSINESS_ADDRESS = process.env.NEXT_PUBLIC_BUSINESS_ADDRESS ?? "";
-const BUSINESS_PHONE = process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? "";
+
 
 /**
  * SalesPage:
@@ -51,6 +49,7 @@ type CartItem = {
   customerPhone?: string;
   brand?: string;
   model?: string;
+  password?: string;
   description?: string;
 };
 
@@ -254,6 +253,7 @@ export default function SalesPage() {
           customerPhone: c.customerPhone,
           brand: c.brand,
           model: c.model,
+          password: c.password,
           description: c.description,
         };
       }
@@ -369,6 +369,7 @@ export default function SalesPage() {
                           <Input placeholder="Teléfono" value={c.customerPhone ?? ""} onChange={(e) => updateServiceField(i, "customerPhone", e.target.value)} />
                           <Input placeholder="Marca" value={c.brand ?? ""} onChange={(e) => updateServiceField(i, "brand", e.target.value)} />
                           <Input placeholder="Modelo" value={c.model ?? ""} onChange={(e) => updateServiceField(i, "model", e.target.value)} />
+                          <Input placeholder="Contrasena" value={c.password ?? ""} onChange={(e) => updateServiceField(i, "password", e.target.value)} />
                           <Input placeholder="Descripción (breve)" value={c.description ?? ""} onChange={(e) => updateServiceField(i, "description", e.target.value)} />
                         </div>
                       )}

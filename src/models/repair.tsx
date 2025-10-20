@@ -13,6 +13,7 @@ const RepairSchema = new Schema(
     },
     brand: String,
     model: String,
+    password: String,
     description: String,
     status: {
       type: String,

@@ -68,6 +68,7 @@ export default function RepairsPage() {
                 <TableHead>Servicio</TableHead>
                 <TableHead>Marca</TableHead>
                 <TableHead>Modelo</TableHead>
+                <TableHead>Contrasena</TableHead>
                 <TableHead>Descripción</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Fecha</TableHead>
@@ -87,7 +88,8 @@ export default function RepairsPage() {
                   <TableCell>{r.title}</TableCell>
                   <TableCell>{r.brand || "-"}</TableCell>
                   <TableCell>{r.model || "-"}</TableCell>
-                  <TableCell className="max-w-[200px] truncate">
+                  <TableCell>{r.password || "-"}</TableCell>
+                  <TableCell className="max-w-[200px] truncate overflow-scroll">
                     {r.description || "-"}
                   </TableCell>
                   <TableCell>
