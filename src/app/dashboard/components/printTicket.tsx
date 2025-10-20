@@ -47,10 +47,10 @@ export const printTicket = ({
     .filter((it) => it.type === "service")
     .map(
       (s) => `
-      <div style="margin-top:6px;font-size:14px">
-        Cliente: ${escapeHtml(s.serviceInfo?.customerName ?? "")} <br/> Telefono ${escapeHtml(s.serviceInfo?.customerPhone ?? "")}<br/>
-        Marca: ${escapeHtml(s.serviceInfo?.brand ?? "")} <br/> Modelo: ${escapeHtml(s.serviceInfo?.model ?? "")}<br/>
-        Nota: ${escapeHtml(s.serviceInfo?.description ?? "")}
+      <div style="margin-top:6px;">
+        Cliente: ${escapeHtml(s.customerName ?? "")} <br/> Telefono ${escapeHtml(s.customerPhone ?? "")}<br/>
+        Marca: ${escapeHtml(s.brand ?? "")} <br/> Modelo: ${escapeHtml(s.model ?? "")}<br/>
+        Nota: ${escapeHtml(s.description ?? "")}
       </div>`
     )
     .join("");
@@ -105,7 +105,6 @@ export const printTicket = ({
             max-width: 58mm;
             margin: 0 auto;
             padding: 0;
-            text-align: center;
           }
 
           table {
@@ -135,7 +134,6 @@ export const printTicket = ({
               width: 100%;
               max-width: 58mm;
               margin: 0 auto;
-              text-align: center;
             }
           }
         </style>

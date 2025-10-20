@@ -77,7 +77,7 @@ export default function RepairsPage() {
             <TableBody>
               {repairs.map((r) => (
                 <TableRow key={r._id}>
-                  <TableCell>{r.saleId}</TableCell>
+                  <TableCell>{r.saleCode}</TableCell>
                   <TableCell>
                     {r.customer?.name || "-"}
                     <br />
