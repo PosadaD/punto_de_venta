@@ -137,3 +137,14 @@ export async function POST(req: Request) {
   }
 }
 
+// GET opcional para listar ventas
+export async function GET() {
+  try {
+    await connectDB();
+    const sales = await Sale.find({}).sort({ createdAt: -1 }).limit(200);
+    return NextResponse.json(sales);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Error obteniendo ventas" }, { status: 500 });
+  }
+}
