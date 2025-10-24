@@ -59,7 +59,7 @@ export const printTicket = ({
     .filter((it) => it.type === "service")
     .map(
       (s) => `
-        <div style="display:flex; font-size: 15px; justify-content:space-between;font-weight:bold">Terminos y Condiciones</div>
+        <div style="display:flex; justify-content:space-between;font-weight:bold">Terminos y Condiciones</div>
         <div>Agradecemos su confianza y hacemos de su conocimiento las siguientes condiciones de servicio.</div>
         <div>• Despues de 30 dias los equipos pueden ser usados como remate o refaccion sin responsabilidad de parte nuestra.</div>
         <div>• Retire chip y memoria, no nos hacemos responsables de tales perdidas.</div>
@@ -95,11 +95,11 @@ export const printTicket = ({
          <style>
           @page {
             size: auto;
-            margin: 5mm;
+            margin: 0mm;
           }
 
           body {
-            font-family: monospace;
+            font-family: sans-serif;
             font-size: 12px;
             width: 100%;
             max-width: 58mm;

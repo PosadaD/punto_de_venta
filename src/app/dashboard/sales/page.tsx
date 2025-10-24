@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { printSalesCode } from "../components/printSaleCode";
+import { printTicket } from "../components/printTicket";
 
 
 const IVA = Number(process.env.IVA_RATE ?? 0.16);
@@ -287,7 +287,7 @@ export default function SalesPage() {
 
 
       // success: print ticket (we'll include services details too)
-      printSalesCode({ sale: data.sale ?? data.saleId ?? data, cart, total, totalNet, totalTax, saleCode, user });
+      printTicket({ sale: data.sale ?? data.saleId ?? data, cart, total, totalNet, totalTax, saleCode, user });
 
 
       // reset cart

@@ -10,14 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Printer } from "lucide-react"; 
+import { printFolioQR } from "../components/printFolio_QR";
 
 export default function RepairsPage() {
   const [repairs, setRepairs] = useState<any[]>([]);
@@ -35,13 +30,11 @@ export default function RepairsPage() {
     fetchRepairs();
   }, []);
 
-  async function handleStatusChange(id: string, newStatus: string) {
-    await fetch("/api/repairs", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status: newStatus }),
+  function handlePrint(repair: any) {
+    printFolioQR({
+      saleCode: repair.saleCode,
+      serviceId: repair._id,
     });
-    fetchRepairs();
   }
 
   return (
@@ -68,9 +61,9 @@ export default function RepairsPage() {
                 <TableHead>Servicio</TableHead>
                 <TableHead>Marca</TableHead>
                 <TableHead>Modelo</TableHead>
-                <TableHead>Contrasena</TableHead>
+                <TableHead>Contraseña</TableHead>
                 <TableHead>Descripción</TableHead>
-                <TableHead>Estado</TableHead>
+                <TableHead>Imprimir</TableHead>
                 <TableHead>Fecha</TableHead>
               </TableRow>
             </TableHeader>
@@ -92,21 +85,14 @@ export default function RepairsPage() {
                   <TableCell className="max-w-[200px] truncate overflow-scroll">
                     {r.description || "-"}
                   </TableCell>
+
+                  {/* 🖨️ Botón de impresión */}
                   <TableCell>
-                    <Select
-                      defaultValue={r.status}
-                      onValueChange={(val) => handleStatusChange(r._id, val)}
-                    >
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="received">Recibido</SelectItem>
-                        <SelectItem value="in_progress">En reparación</SelectItem>
-                        <SelectItem value="completed">Completado</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Button size="sm" onClick={() => handlePrint(r)}>
+                      <Printer size={16} />
+                    </Button>
                   </TableCell>
+
                   <TableCell>
                     {new Date(r.createdAt).toLocaleDateString("es-MX")}
                   </TableCell>
