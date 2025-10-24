@@ -109,6 +109,14 @@ export function middleware(req: NextRequest) {
     });
   }
 
+  // Control de acceso para página fuera del dashboard
+  if (pathname.startsWith("/repairs/")) {
+    const allowedRoles = ["admin", "technician"];
+    if (!roles.some((r) => allowedRoles.includes(r))) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
   // Si no es /dashboard → permitir
   return NextResponse.next({
     request: { headers: requestHeaders },
@@ -117,5 +125,5 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   // Aplica el middleware a todas las rutas del dashboard y raíz
-  matcher: ["/dashboard/:path*", "/"],
+  matcher: ["/dashboard/:path*", "/repairs/:path*", "/"],
 };

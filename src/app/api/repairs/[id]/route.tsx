@@ -34,3 +34,55 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: err.message || "Error servidor" }, { status: 500 });
   }
 }
+
+
+
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  await connectDB();
+
+  try {
+    const repair = await Repair.findById(id);
+
+    if (!repair) {
+      return NextResponse.json(
+        { error: "Reparación no encontrada" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(repair, { status: 200 });
+  } catch (error) {
+    console.error("Error al obtener la reparación:", error);
+    return NextResponse.json(
+      { error: "Error al obtener la reparación" },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
+  await connectDB();
+  const { id } = await context.params;
+
+  try {
+    const body = await req.json();
+
+    const repair = await Repair.findByIdAndUpdate(id, body, { new: true });
+
+    if (!repair) {
+      return NextResponse.json({ error: "Reparación no encontrada" }, { status: 404 });
+    }
+
+    return NextResponse.json(repair, { status: 200 });
+  } catch (error) {
+    console.error("Error al actualizar la reparación:", error);
+    return NextResponse.json(
+      { error: "Error al actualizar la reparación"},
+      { status: 500 }
+    );
+  }
+}
+
+
