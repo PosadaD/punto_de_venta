@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ProductForm from "../components/productForm";
+import { handlePrint } from "../components/printBarCode";
+import { Printer } from "lucide-react";
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -27,6 +29,7 @@ export default function InventoryPage() {
     await fetch(`/api/products/${id}`, { method: "DELETE" });
     fetchProducts(search);
   };
+
 
   return (
     <div className="p-6">
@@ -72,6 +75,7 @@ export default function InventoryPage() {
                   <td className="p-2">${p.salePrice}</td>
                   <td className="p-2">{p.stock}</td>
                   <td className="p-2 text-right space-x-2">
+                    <Button size="sm" onClick={() => handlePrint(p)}><Printer size={16} /></Button>
                     <Button variant="outline" onClick={() => { setEditingProduct(p); setIsFormOpen(true); }}>
                       Editar
                     </Button>
