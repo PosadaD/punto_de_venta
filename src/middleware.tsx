@@ -111,7 +111,7 @@ export function middleware(req: NextRequest) {
 
   // Control de acceso para página fuera del dashboard
   if (pathname.startsWith("/repairs/")) {
-    const allowedRoles = ["admin", "technician"];
+    const allowedRoles = ["admin", "technician", "delivery"];
     if (!roles.some((r) => allowedRoles.includes(r))) {
       return NextResponse.redirect(new URL("/login", req.url));
     }

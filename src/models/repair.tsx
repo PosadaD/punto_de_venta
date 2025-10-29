@@ -20,6 +20,7 @@ const RepairSchema = new Schema(
       enum: ["received", "in_progress", "completed", "delivered"],
       default: "received",
     },
+    revision: String,
   },
   { timestamps: true }
 );

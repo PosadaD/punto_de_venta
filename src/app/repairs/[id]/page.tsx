@@ -11,6 +11,14 @@ export default function RepairDetailPage() {
   const { id } = useParams();
   const [repair, setRepair] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+
+   useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     const fetchRepair = async () => {
@@ -44,7 +52,7 @@ export default function RepairDetailPage() {
         </CardHeader>
         
         {/* Información de reparación en un contenedor */}
-        <div className="p-6 space-y-3 text-sm">
+        <div className="p-6 space-y-2 text-sm">
           <div>
             <strong>Cliente:</strong> {repair.customer?.name}
           </div>
@@ -64,11 +72,14 @@ export default function RepairDetailPage() {
             <strong>Estado actual:</strong> 
             <Badge variant="outline" className="ml-2">{repair.status}</Badge>
           </div>
+          <div>
+            <strong>Nota de Revision:</strong> {repair.revision}
+          </div>
         </div>
         
         <CardFooter>
           {/* Componente para cambiar estado */}
-          <RepairForm repair={repair} setRepair={setRepair} />
+          <RepairForm repair={repair} setRepair={setRepair} userRoles={user.roles}/>
         </CardFooter>
       </Card>
     </div>
