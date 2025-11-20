@@ -66,6 +66,9 @@ export default function RepairDetailPage() {
             <strong>Modelo:</strong> {repair.model}
           </div>
           <div>
+            <strong>Contrasena:</strong> {repair.password}
+          </div>
+          <div>
             <strong>Descripción:</strong> {repair.description}
           </div>
           <div>

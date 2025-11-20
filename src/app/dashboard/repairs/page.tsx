@@ -17,6 +17,12 @@ import { printFolioQR } from "../components/printFolio_QR";
 export default function RepairsPage() {
   const [repairs, setRepairs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false); // State for updating status
+
+  // Estados en inglés para el backend
+  const statesInEnglish = ["received", "in_progress", "completed"];
+  // Estados en español para el frontend
+  const statesInSpanish = ["Recibido", "En progreso", "Completado"];
 
   async function fetchRepairs() {
     setLoading(true);
@@ -29,6 +35,39 @@ export default function RepairsPage() {
   useEffect(() => {
     fetchRepairs();
   }, []);
+
+  // Función para manejar el cambio de estado
+  async function handleStatusChange(repairId: string, newStatus: string) {
+    setUpdating(true); // Show loading while updating
+    try {
+      // Convertimos el estado seleccionado (en español) a su valor en inglés
+      const statusInEnglish = statesInEnglish[statesInSpanish.indexOf(newStatus)];
+
+      const res = await fetch(`/api/repairs/${repairId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: statusInEnglish }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al actualizar el estado");
+      }
+
+      const updatedRepair = await res.json();
+      setRepairs((prevRepairs) =>
+        prevRepairs.map((repair) =>
+          repair._id === repairId ? { ...repair, status: statusInEnglish } : repair
+        )
+      );
+      alert("Estado actualizado exitosamente");
+    } catch (error) {
+      alert("Error al actualizar el estado: " + console.log(error));
+    } finally {
+      setUpdating(false); // Hide loading
+    }
+  }
 
   function handlePrint(repair: any) {
     printFolioQR({
@@ -65,6 +104,7 @@ export default function RepairsPage() {
                 <TableHead>Descripción</TableHead>
                 <TableHead>Imprimir</TableHead>
                 <TableHead>Fecha</TableHead>
+                <TableHead>Estado</TableHead> {/* New column for state */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -95,6 +135,23 @@ export default function RepairsPage() {
 
                   <TableCell>
                     {new Date(r.createdAt).toLocaleDateString("es-MX")}
+                  </TableCell>
+
+                  {/* Estado de la reparación - Lista desplegable */}
+                  <TableCell>
+                    <select
+                      value={statesInSpanish[statesInEnglish.indexOf(r.status)]} // Mostrar estado en español
+                      onChange={(e) =>
+                        handleStatusChange(r._id, e.target.value)
+                      }
+                      disabled={updating} // Deshabilitar el select mientras se actualiza
+                    >
+                      {statesInSpanish.map((state, index) => (
+                        <option key={index} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
                   </TableCell>
                 </TableRow>
               ))}

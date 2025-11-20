@@ -25,6 +25,9 @@ export default function RepairsHistoryPage() {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Repair>>({});
+  
+  // Opciones de estado
+  const states = ["received", "in_progress", "completed", "delivered"];
 
   const fetchRepairs = async () => {
     try {
@@ -141,6 +144,28 @@ export default function RepairsHistoryPage() {
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                     placeholder="Descripción"
                   />
+                  
+                  {/* Agregar select para el estado */}
+                  <div>
+                    <label className="block">Estado</label>
+                    <select
+                      value={editForm.status || r.status}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, status: e.target.value })
+                      }
+                      className="border p-2 rounded w-full"
+                    >
+                      {states.map((state) => (
+                        <option key={state} value={state}>
+                          {state === "received" && "Recibido"}
+                          {state === "in_progress" && "En progreso"}
+                          {state === "completed" && "Completado"}
+                          {state === "delivered" && "Entregado"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div className="flex justify-end space-x-2">
                     <Button variant="outline" onClick={() => setEditingId(null)}>
                       Cancelar
