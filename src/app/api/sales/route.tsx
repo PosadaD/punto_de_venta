@@ -18,35 +18,47 @@ export async function POST(req: Request) {
     }
 
     if (!user) {
-      return NextResponse.json({ error: "Usuario que realiza la venta requerido" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Usuario que realiza la venta requerido" },
+        { status: 400 }
+      );
     }
 
-    // Generar saleCode si no se envía desde el frontend
     const generatedSaleCode = saleCode || `S-${Date.now()}`;
 
-    // Obtener productos/servicios
     const ids = items.map((i: any) => i.productId);
     const products = await Product.find({ _id: { $in: ids } });
+
     const map = new Map();
     products.forEach((p) => map.set(String(p._id), p));
 
-    // Cálculo de totales
     let total = 0;
     let totalNet = 0;
     let totalTax = 0;
+    let paid = 0;
+
     const saleItems: any[] = [];
     const servicesForRepair: any[] = [];
 
     for (const it of items) {
       const prod = map.get(String(it.productId));
-      if (!prod)
-        return NextResponse.json({ error: `Producto no encontrado ${it.productId}` }, { status: 404 });
+      if (!prod) {
+        return NextResponse.json(
+          { error: `Producto no encontrado ${it.productId}` },
+          { status: 404 }
+        );
+      }
 
       const qty = Number(it.qty);
-      if (isNaN(qty) || qty <= 0)
-        return NextResponse.json({ error: `Cantidad inválida para ${prod.title}` }, { status: 400 });
-
       const unitPrice = Number(it.unitPrice);
+
+      if (isNaN(qty) || qty <= 0) {
+        return NextResponse.json(
+          { error: `Cantidad inválida para ${prod.title}` },
+          { status: 400 }
+        );
+      }
+
       const lineTotal = unitPrice * qty;
       const netUnit = unitPrice / (1 + TAX_RATE);
       const taxUnit = unitPrice - netUnit;
@@ -57,6 +69,25 @@ export async function POST(req: Request) {
 
       if (prod.type === "service") {
         const serviceInfo = it.serviceInfo || {};
+
+        if (!serviceInfo.technicianId) {
+          return NextResponse.json(
+            { error: "Técnico requerido para el servicio" },
+            { status: 400 }
+          );
+        }
+
+        const deposit = Number(serviceInfo.deposit || 0);
+
+        if (deposit > lineTotal) {
+          return NextResponse.json(
+            { error: "El anticipo no puede ser mayor al total del servicio" },
+            { status: 400 }
+          );
+        }
+
+        paid += deposit;
+
         saleItems.push({
           productId: prod._id,
           title: prod.title,
@@ -65,12 +96,32 @@ export async function POST(req: Request) {
           qty,
           unitPrice,
           lineTotal,
-          serviceInfo,
+          customer: {
+            name: serviceInfo.customerName,
+            phone: serviceInfo.customerPhone,
+          },
+          brand: serviceInfo.brand,
+          model: serviceInfo.model,
+          description: serviceInfo.description,
         });
-        servicesForRepair.push({ prod, qty, serviceInfo });
+
+        servicesForRepair.push({
+          prod,
+          qty,
+          unitPrice,
+          lineTotal,
+          serviceInfo,
+          deposit,
+        });
       } else {
-        if (prod.stock < qty)
-          return NextResponse.json({ error: `Stock insuficiente para ${prod.title}` }, { status: 400 });
+        if (prod.stock < qty) {
+          return NextResponse.json(
+            { error: `Stock insuficiente para ${prod.title}` },
+            { status: 400 }
+          );
+        }
+
+        paid += lineTotal;
 
         saleItems.push({
           productId: prod._id,
@@ -84,7 +135,9 @@ export async function POST(req: Request) {
       }
     }
 
-    // Actualizar stock de productos
+    const balance = total - paid;
+
+    // Actualizar stock
     const ops: any[] = [];
     for (const it of items) {
       const prod = map.get(String(it.productId));
@@ -97,6 +150,7 @@ export async function POST(req: Request) {
         });
       }
     }
+
     if (ops.length) await Product.bulkWrite(ops);
 
     // Crear venta
@@ -105,16 +159,20 @@ export async function POST(req: Request) {
       total,
       totalNet,
       totalTax,
+      paid,
+      balance,
       saleCode: generatedSaleCode,
-      user, // { userId, username }
-      status: servicesForRepair.length ? "pending" : "completed",
+      user,
+      status: balance > 0 ? "pending" : "completed",
     });
 
-    // Crear reparaciones asociadas a la venta
+    // Crear reparaciones
     for (const s of servicesForRepair) {
+      const remainingBalance = s.lineTotal - s.deposit;
+
       await Repair.create({
         saleId: sale._id,
-        saleCode: generatedSaleCode, // Importante: ahora se incluye
+        saleCode: generatedSaleCode,
         productId: s.prod._id,
         title: s.prod.title,
         code: s.prod.code,
@@ -124,27 +182,24 @@ export async function POST(req: Request) {
         },
         brand: s.serviceInfo.brand,
         model: s.serviceInfo.model,
-        password: s.serviceInfo.password,  // se icluye la contrasena
+        password: s.serviceInfo.password,
         description: s.serviceInfo.description,
+        technician: s.serviceInfo.technicianId,
+        deposit: s.deposit,
+        remainingBalance,
         status: "received",
       });
     }
 
-    return NextResponse.json({ message: "✅ Venta creada correctamente", sale });
+    return NextResponse.json({
+      message: "✅ Venta creada correctamente",
+      sale,
+    });
   } catch (err: any) {
     console.error("Error creando venta", err);
-    return NextResponse.json({ error: err.message || "Error servidor" }, { status: 500 });
-  }
-}
-
-// GET opcional para listar ventas
-export async function GET() {
-  try {
-    await connectDB();
-    const sales = await Sale.find({}).sort({ createdAt: -1 }).limit(200);
-    return NextResponse.json(sales);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Error obteniendo ventas" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Error servidor" },
+      { status: 500 }
+    );
   }
 }

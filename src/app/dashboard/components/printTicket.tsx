@@ -3,6 +3,7 @@ export const printTicket = ({
   sale,
   cart,
   total,
+  anticipo,
   totalNet,
   totalTax,
   saleCode,
@@ -11,6 +12,7 @@ export const printTicket = ({
   sale: any;
   cart: any[];
   total: number;
+  anticipo: number;
   totalNet: number;
   totalTax: number;
   saleCode: string;
@@ -23,14 +25,21 @@ export const printTicket = ({
   const IVA = Number(process.env.NEXT_PUBLIC_IVA_RATE || 0.16);
   const BUSINESS_LOGO = process.env.NEXT_PUBLIC_BUSINESS_LOGO || "/logo.png";
 
-  const widthPx = 320;
   const w = window.open("", "_blank", `width=400,height=600`);
   if (!w) return;
 
   const escapeHtml = (str: string = "") =>
-    str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]!));
+    str.replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[
+        c
+      ]!)
+    );
 
-  const formatMoney = (n: number) => n.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+  const formatMoney = (n: number) =>
+    n.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+
+  const hasService = cart.some((it) => it.type === "service");
+  const saldoPendiente = total - (anticipo ?? 0);
 
   const itemsHtml = cart
     .map(
@@ -43,118 +52,137 @@ export const printTicket = ({
     )
     .join("");
 
-  const servicesHtml = cart
-    .filter((it) => it.type === "service")
-    .map(
-      (s) => `
-      <div style="margin-top:6px;">
-        Cliente: ${escapeHtml(s.customerName ?? "")} <br/> Telefono ${escapeHtml(s.customerPhone ?? "")}<br/>
-        Marca: ${escapeHtml(s.brand ?? "")} <br/> Modelo: ${escapeHtml(s.model ?? "")}<br/>
-        Nota: ${escapeHtml(s.description ?? "")}
-      </div>`
-    )
-    .join("");
+  const anticipoHtml = hasService
+    ? `
+        ${
+          anticipo > 0
+            ? `
+        <div style="display:flex;justify-content:space-between">
+          <div>Anticipo</div>
+          <div>- ${formatMoney(anticipo)}</div>
+        </div>
+        `
+            : ""
+        }
 
-    const terminosHtml = cart
-    .filter((it) => it.type === "service")
-    .map(
-      (s) => `
-        <div style="display:flex; justify-content:space-between;font-weight:bold">Terminos y Condiciones</div>
-        <div>Agradecemos su confianza y hacemos de su conocimiento las siguientes condiciones de servicio.</div>
-        <div>• Despues de 30 dias los equipos pueden ser usados como remate o refaccion sin responsabilidad de parte nuestra.</div>
-        <div>• Retire chip y memoria, no nos hacemos responsables de tales perdidas.</div>
-        <div>• En equipos mojados, software, danos por mal uso e intervenidos, no hay garantia.</div>
-        <div>• Si requiere mas tiempo solicite una nueva fecha.</div>
-        <div>• La entrega del equipo sera solo con nota o identificacion.</div>
-        <div>• Lo reemplazos de piezas cuentan con 15 dias de garantia contra defectos de fabrica. No aplica garantia si el equipo presenta dano por golpe, humedad o mal uso.</div>
-        <div>• Pueden existir variaciones entre la pieza original y el reemplazo, como logos, tonalidad, material, etc.</div>
-        <div>• Los tiempos de liberacion por codigo y via servidor son establecidos por provveedores terceros, en raras ocasiones pueden retrasarse. No habra reembolso hasta completada la orde. La liberacion de compania no elimina el reporte de robo o extravio.</div>
-        <div>• El tiempo de entrege puede retrasarse cuando la refaccion viene de proveedores externos.</div>
-        <div class="line"></div>
-            <div style="display:flex; font-size: 15px; justify-content:space-between;font-weight:bold">Firma</div>
-        <div class="line" style="margin-top:36px;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:bold;">
+          <div>TOTAL A PAGAR</div>
+          <div>${formatMoney(saldoPendiente)}</div>
+        </div>
+
         <div class="line"></div>
       `
-    )
-    .join("");
+    : "";
+
+  const terminosHtml = hasService
+    ? `
+      <div class="line"></div>
+
+      <div style="font-weight:bold;text-align:center;margin-bottom:4px;">
+        TÉRMINOS Y CONDICIONES
+      </div>
+
+      <div style="font-size:11px;">
+        • Después de 30 días los equipos pueden ser usados como remate o refacción.
+        <br/>
+        • Retire chip y memoria, no nos hacemos responsables de pérdidas.
+        <br/>
+        • No hay garantía por daños por mal uso, humedad o golpes.
+        <br/>
+        • Entrega solo con nota o identificación.
+        <br/>
+        • Las piezas cuentan con 15 días de garantía contra defecto de fábrica.
+        <br/>
+        • Tiempos sujetos a proveedores externos.
+      </div>
+
+      <div class="line"></div>
+
+      <div style="text-align:center;font-weight:bold;margin-top:12px;">
+        Firma
+      </div>
+
+      <div class="line" style="margin-top:40px;"></div>
+    `
+    : "";
 
   const businessHtml = `
     <div style="text-align:center;margin-bottom:6px;">
-      <img src="${BUSINESS_LOGO}" alt="Logo" style="max-width:150px;margin-bottom:10px;" /><br/>
-      <div style="font-size:14px;">${escapeHtml(BUSINESS_ADDRESS)}</div>
-      <div style="font-size:14px;">Tel: ${escapeHtml(BUSINESS_PHONE)}</div>
-      <div style="margin:6px 0;border-top:1px dashed #000;"></div>
+      <img src="${BUSINESS_LOGO}" style="max-width:150px;margin-bottom:10px;" />
+      <div style="font-weight:bold;">${escapeHtml(BUSINESS_NAME)}</div>
+      <div>${escapeHtml(BUSINESS_ADDRESS)}</div>
+      <div>Tel: ${escapeHtml(BUSINESS_PHONE)}</div>
+      ${
+        BUSINESS_RFC
+          ? `<div>RFC: ${escapeHtml(BUSINESS_RFC)}</div>`
+          : ""
+      }
+      <div class="line"></div>
     </div>`;
 
-  const userHtml = user ? `<div style="font-size:14px;">Vendedor: ${escapeHtml(user.username)}</div>` : "";
+  const userHtml = user
+    ? `<div>Vendedor: ${escapeHtml(user.username)}</div>`
+    : "";
 
   const html = `
     <html>
       <head>
         <title>Ticket ${saleCode}</title>
-         <style>
-          @page {
-            size: auto;
-            margin: 0mm;
-          }
-
+        <style>
           body {
             font-family: sans-serif;
             font-size: 12px;
-            width: 100%;
             max-width: 58mm;
             margin: 0 auto;
-            padding: 0;
           }
-
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0 auto;
-          }
-
-          td {
-            padding: 2px 0;
-            font-size: 12px;
-          }
-
-          .totals td {
-            font-weight: bold;
-            border-top: 1px dashed #000;
-            padding-top: 6px;
-          }
-
           .line {
             border-top: 1px dashed #000;
             margin: 8px 0;
           }
-
-          @media print {
-            body {
-              width: 100%;
-              max-width: 58mm;
-              margin: 0 auto;
-            }
-          }
         </style>
       </head>
       <body>
+
         ${businessHtml}
+
         <div>Folio: ${escapeHtml(saleCode)}</div>
-        <div>${new Date(sale.createdAt ?? Date.now()).toLocaleString()}</div>
+        <div>${new Date(
+          sale.createdAt ?? Date.now()
+        ).toLocaleString()}</div>
+
         <div class="line"></div>
+
         ${itemsHtml}
+
         <div class="line"></div>
-        <div style="display:flex;justify-content:space-between"><div>Subtotal</div><div class="right">${formatMoney(totalNet)}</div></div>
-        <div style="display:flex;justify-content:space-between"><div>IVA (${(IVA * 100).toFixed(0)}%)</div><div class="right">${formatMoney(totalTax)}</div></div>
-        <div style="display:flex;justify-content:space-between;font-weight:bold"><div>Total</div><div class="right">${formatMoney(total)}</div></div>
+
+        <div style="display:flex;justify-content:space-between">
+          <div>Subtotal</div>
+          <div>${formatMoney(totalNet)}</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between">
+          <div>IVA (${(IVA * 100).toFixed(0)}%)</div>
+          <div>${formatMoney(totalTax)}</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-weight:bold">
+          <div>Total</div>
+          <div>${formatMoney(total)}</div>
+        </div>
+
         <div class="line"></div>
-        ${servicesHtml}
-        <div class="line"></div>
-        ${userHtml}
-        <div class="line"></div>
+
+        ${anticipoHtml}
+
         ${terminosHtml}
-        <div style="text-align:center;margin-top:10px">¡Gracias por su compra!</div>
+
+        ${userHtml}
+
+        <div style="text-align:center;margin-top:10px">
+          ¡Gracias por su preferencia!
+        </div>
+
       </body>
     </html>
   `;
@@ -163,6 +191,7 @@ export const printTicket = ({
   w.document.write(html);
   w.document.close();
   w.focus();
+
   setTimeout(() => {
     w.print();
     w.close();
