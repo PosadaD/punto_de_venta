@@ -14,6 +14,10 @@ type Repair = {
   status: string;
   remainingBalance: number;
   createdAt: string;
+  brand: String,
+  model: String,
+  password: String,
+  description: String,
 };
 
 type TechnicianGroup = {

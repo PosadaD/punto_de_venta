@@ -15,9 +15,9 @@ const SaleItemSchema = new Schema({
     phone: String,
   },
 
-  brand: String,
-  model: String,
-  description: String,
+  brand: {type: String},
+  model: {type: String},
+  description: {type: String},
 });
 
 const SaleSchema = new Schema(

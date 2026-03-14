@@ -33,6 +33,7 @@ type Sale = {
   total: number;
   totalNet: number;
   totalTax: number;
+  paid: number;
   createdAt: string;
   user: { username: string };
 };
@@ -50,8 +51,8 @@ export default function SalesHistoryPage() {
     try {
       const res = await fetch("/api/sales");
       const data = await res.json();
-      setSales(data);
-      setFilteredSales(data);
+      setSales(data.sales);
+      setFilteredSales(data.sales);
     } catch (err) {
       console.error(err);
     }
@@ -154,10 +155,14 @@ export default function SalesHistoryPage() {
         const totalNet = sale.totalNet;
         const totalTax = sale.totalTax;
 
+         //obtener el anticipo
+        const anticipo = sale.paid;
+
         printTicket({
           sale,
           cart,
           total,
+          anticipo,
           totalNet,
           totalTax,
           saleCode: sale.saleCode,

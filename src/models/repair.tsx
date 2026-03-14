@@ -24,10 +24,10 @@ const RepairSchema = new Schema(
       phone: { type: String, required: true },
     },
 
-    brand: {String},
-    model: {String},
-    password: {String},
-    description: {String},
+    brand: {type: String},
+    model: {type: String},
+    password: {type: String},
+    description: {type: String},
 
     technician: {
       type: Schema.Types.ObjectId,
